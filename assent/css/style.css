@@ -1,0 +1,529 @@
+/* =========================================
+   1. VARIÁVEIS E RESET
+   ========================================= */
+:root {
+    --cor-principal: #1a1a1a;    /* Preto Suave (Fundo Header/Footer) */
+    --cor-fundo: #FFFFFF;        /* Branco (Fundo Site) */
+    --cor-destaque: #f4f4f4;     /* Cinza Claro (Fundo Seções) */
+    --cor-acento: #7b2cbf;       /* Roxo Vibrante (Botões) */
+    --cor-acento-hover: #5a1e8c; /* Roxo Escuro (Hover Botões) */
+    --cor-texto-claro: #FFFFFF;  /* Texto sobre fundo escuro */
+    --cor-texto-escuro: #333333; /* Texto padrão */
+}
+
+* {
+    box-sizing: border-box; /* Garante que padding não aumente o tamanho dos elementos */
+}
+
+body, h1, h2, h3, p, ul, li {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Fonte de Destaque para Títulos */
+h1, h2, h3, .logo, .cta-button, button {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
+
+body {
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto-escuro);
+    /* Fade-in inicial */
+    opacity: 0; 
+    transition: opacity 1s ease-in-out;
+}
+
+body.loaded {
+    opacity: 1;
+}
+
+/* Garante espaço para o rodapé fixo não cobrir o conteúdo */
+main {
+    padding-bottom: 100px; 
+    min-height: 80vh; /* Garante altura mínima */
+}
+
+/* =========================================
+   2. CABEÇALHO E NAVEGAÇÃO
+   ========================================= */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: var(--cor-principal);
+    flex-wrap: wrap; /* Permite que o menu quebre linha no celular */
+    position: relative;
+    z-index: 1000;
+}
+
+.logo a {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: var(--cor-texto-claro);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+/* Botão Menu Hambúrguer (Mobile) */
+.menu-toggle {
+    display: none; /* Escondido no PC */
+    background: none;
+    border: none;
+    color: var(--cor-texto-claro);
+    font-size: 2em;
+    cursor: pointer;
+}
+
+/* Navegação */
+header nav ul {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+header nav li {
+    margin-left: 20px;
+}
+
+header nav a {
+    text-decoration: none;
+    color: var(--cor-texto-claro);
+    font-weight: 500;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+
+header nav a:hover {
+    opacity: 1;
+}
+
+/* =========================================
+   3. COMPONENTES GERAIS (Botões, Inputs)
+   ========================================= */
+.cta-button, 
+.checkout-button, 
+.product-card button, 
+.details-button {
+    background-color: var(--cor-acento);
+    color: var(--cor-texto-claro);
+    padding: 15px 30px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    transition: background-color 0.3s, transform 0.2s;
+    
+    /* Para o efeito Ripple */
+    position: relative; 
+    overflow: hidden;
+}
+
+.cta-button:hover, 
+.checkout-button:hover,
+.product-card button:hover {
+    background-color: var(--cor-acento-hover);
+}
+
+/* Inputs de Formulário */
+input[type="text"],
+input[type="email"],
+input[type="number"],
+textarea,
+select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    font-family: 'Roboto', sans-serif;
+    margin-bottom: 10px;
+}
+
+/* =========================================
+   4. PÁGINA INICIAL (HERO & DESTAQUES)
+   ========================================= */
+.hero {
+    text-align: center;
+    padding: 100px 20px;
+    background-color: var(--cor-destaque);
+}
+
+.hero h1 {
+    font-size: 3em;
+    margin-bottom: 15px;
+    color: var(--cor-principal);
+}
+
+.hero p {
+    font-size: 1.2em;
+    margin-bottom: 30px;
+}
+
+.featured-products, .shop-header {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+/* =========================================
+   5. LOJA (GRID DE PRODUTOS)
+   ========================================= */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    padding: 20px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.product-card {
+    border: 1px solid #eee;
+    padding: 15px;
+    text-align: center;
+    border-radius: 8px;
+    transition: box-shadow 0.3s;
+    background: #fff;
+}
+
+.product-card:hover {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.product-image-placeholder {
+    height: 250px;
+    overflow: hidden;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+}
+
+.product-card a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.price {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: var(--cor-principal);
+    margin: 10px 0;
+}
+
+/* Botão menor dentro do card */
+.details-button {
+    padding: 10px 20px;
+    font-size: 0.9em;
+}
+
+/* =========================================
+   6. PÁGINA DE PRODUTO (DETALHES)
+   ========================================= */
+.product-page {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.product-container {
+    display: flex;
+    gap: 40px;
+}
+
+.product-image-gallery {
+    flex: 1;
+}
+
+.main-image-placeholder {
+    height: 500px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #eee;
+}
+
+.product-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.product-description {
+    line-height: 1.6;
+    margin-bottom: 25px;
+    color: #555;
+}
+
+.product-options {
+    margin-bottom: 20px;
+}
+
+/* =========================================
+   7. CARRINHO E CHECKOUT
+   ========================================= */
+.cart-page, .checkout-page {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.cart-container, .checkout-container {
+    display: flex;
+    gap: 30px;
+}
+
+.cart-items, .checkout-form {
+    flex: 2;
+}
+
+.cart-summary, .checkout-summary {
+    flex: 1;
+    background-color: var(--cor-destaque);
+    padding: 25px;
+    border-radius: 8px;
+    height: fit-content;
+}
+
+.cart-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.cart-table th, .cart-table td {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.summary-row.total {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 15px;
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+}
+
+/* Estilos específicos do Checkout */
+.checkout-form section {
+    background: #fff;
+    border: 1px solid #eee;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+/* =========================================
+   8. CONTATO E OBRIGADO
+   ========================================= */
+.contact-page, .thank-you-page {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.contact-container {
+    display: flex;
+    gap: 30px;
+    text-align: left;
+    margin-top: 30px;
+}
+
+.contact-info {
+    background-color: var(--cor-destaque);
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.thank-you-page {
+    background-color: var(--cor-destaque);
+    border-radius: 8px;
+    padding: 50px;
+}
+
+/* =========================================
+   9. ELEMENTOS FIXOS (RODAPÉ E WHATSAPP)
+   ========================================= */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: var(--cor-principal);
+    color: var(--cor-texto-claro);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 900;
+}
+
+.whatsapp-button {
+    position: fixed;
+    bottom: 90px; /* Acima do rodapé */
+    right: 15px;  /* Perto da borda */
+    background-color: #25D366;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s;
+}
+
+.whatsapp-button:hover {
+    transform: scale(1.1);
+}
+
+.whatsapp-button img {
+    width: 35px;
+    height: 35px;
+}
+
+/* =========================================
+   10. ANIMAÇÕES
+   ========================================= */
+/* Efeito Ripple (Onda) */
+.ripple {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.7);
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    animation: ripple-effect 0.5s linear;
+    pointer-events: none;
+}
+
+@keyframes ripple-effect {
+    to { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+}
+
+/* Animação Menu Mobile */
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   11. RESPONSIVIDADE (MEDIA QUERIES)
+   ========================================= */
+@media (max-width: 768px) {
+    
+    /* Header e Menu Mobile */
+    .menu-toggle {
+        display: block; /* Mostra o botão hambúrguer */
+    }
+
+    .navbar {
+        display: none; /* Esconde o menu inicialmente */
+        width: 100%;
+        margin-top: 15px;
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .navbar.active {
+        display: block; /* Mostra quando ativo */
+        animation: slideDown 0.3s ease forwards;
+    }
+
+    header nav ul {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    header nav li {
+        margin: 15px 0;
+        margin-left: 0;
+    }
+
+    /* Ajustes de Layout */
+    .hero h1 { font-size: 2em; }
+    
+    .product-grid { grid-template-columns: 1fr; padding: 20px; }
+
+    .product-container, 
+    .cart-container, 
+    .checkout-container, 
+    .contact-container {
+        flex-direction: column; /* Empilha colunas */
+    }
+    
+    .checkout-container {
+        flex-direction: column-reverse; /* Resumo em baixo no celular, ou em cima se preferir */
+    }
+
+    .main-image-placeholder { height: 300px; }
+}
+
+@media (max-width: 480px) {
+    /* Ajustes finos para telas muito pequenas */
+    .cart-thumb-img {
+        width: 40px !important; /* Imagem menor */
+        height: 40px !important;
+    }
+    
+    .cart-table th, .cart-table td {
+        padding: 8px 5px; /* Menos espaço nas células */
+        font-size: 0.9em; /* Texto menor */
+    }
+    
+    .cart-quantity {
+        width: 40px !important;
+    }
+}
+
+/* Notificação Toast */
+#toast {
+    visibility: hidden;
+    min-width: 250px;
+    background-color: var(--cor-principal); /* Preto */
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 16px;
+    position: fixed;
+    z-index: 3000;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%);
+    font-size: 17px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    border-left: 5px solid var(--cor-acento); /* Roxo */
+}
+
+#toast.show {
+    visibility: visible;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadeout {
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+}
