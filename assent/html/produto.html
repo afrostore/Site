@@ -3,29 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta property="og:title" content="AFRO - Arte em Blusas" />
-    <meta
-      property="og:description"
-      content="Confira nossas estampas exclusivas e produção própria. Moda com identidade."
-    />
-    <meta
-      property="og:image"
-      content="https://seusite.com/assent/img/logo.jpeg"
-    />
-    <meta property="og:url" content="https://seusite.com" />
-    <meta property="og:type" content="website" />
-    <title>T-Shirt Estampa AFRO Original - Loja AFRO</title>
+    <title>Produto - Loja AFRO</title>
     <link rel="stylesheet" href="../css/style.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
   </head>
   <body>
     <header>
-      <div class="logo"><a href="../../index.html"> AFRO </a></div>
+      <div class="logo"><a href="../../index.html" style="color: white; text-decoration: none;">AFRO</a></div>
       <button class="menu-toggle" aria-label="Abrir Menu">☰</button>
       <nav class="navbar">
         <ul>
@@ -39,18 +25,24 @@
     </header>
 
     <main class="product-page">
-      <div class="product-container" data-id="">
-        <div class="product-image-gallery">
-          <div class="main-image-placeholder" id="product-image"></div>
-        </div>
+      <div class="product-container" data-id="" data-selected-color="" data-selected-img="">
+        <div class="main-image-placeholder" id="product-image">
+          </div>
+
         <div class="product-info">
           <h1 id="product-name">Carregando...</h1>
           <p class="product-price" id="product-price">R$ 0,00</p>
           <p class="product-description" id="product-description">...</p>
 
           <div class="product-options">
+            <label>Selecione a Cor:</label>
+            <div id="color-swatches" class="color-swatches">
+                </div>
+          </div>
+
+          <div class="product-options">
             <label for="tamanho">Tamanho:</label>
-            <select id="tamanho" name="tamanho">
+            <select id="tamanho" name="tamanho" style="width: 100%; padding: 10px; border-radius: 5px;">
               <option value="P">P</option>
               <option value="M">M</option>
               <option value="G">G</option>
@@ -60,16 +52,10 @@
 
           <div class="product-options">
             <label for="quantidade">Quantidade:</label>
-            <input
-              type="number"
-              id="quantidade"
-              name="quantidade"
-              value="1"
-              min="1"
-            />
+            <input type="number" id="quantidade" name="quantidade" value="1" min="1" />
           </div>
 
-          <button class="cta-button add-to-cart" id="add-to-cart-btn">
+          <button class="cta-button" id="add-to-cart-btn">
             Adicionar ao Carrinho
           </button>
         </div>
@@ -80,18 +66,10 @@
       <p>© 2025 Loja AFRO. Todos os direitos reservados.</p>
     </footer>
 
-    <a
-      href="https://wa.me/+558592093436"
-      class="whatsapp-button"
-      target="_blank"
-    >
-      <img
-        src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
-        alt="WhatsApp"
-        width="50"
-        height="50"
-      />
+    <a href="https://wa.me/+558592093436" class="whatsapp-button" target="_blank">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" width="50" height="50" />
     </a>
+
     <div id="toast"></div>
     <script src="../js/script.js"></script>
   </body>

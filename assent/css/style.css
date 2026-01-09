@@ -518,6 +518,114 @@ footer {
     animation: fadein 0.5s, fadeout 0.5s 2.5s;
 }
 
+/* Botões de Filtro da Loja */
+.filter-btn {
+    padding: 10px 20px;
+    margin: 5px;
+    border: 2px solid var(--cor-principal); /* Preto */
+    background: transparent;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 20px;
+    transition: all 0.3s;
+    font-family: 'Montserrat', sans-serif;
+    color: var(--cor-principal);
+}
+
+.filter-btn:hover, .filter-btn.active {
+    background: var(--cor-principal);
+    color: #fff;
+}
+/* 🎨 Seletor de Cores Visual (Círculos Coloridos) */
+.color-swatches {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.swatch {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.swatch.active {
+    border-color: var(--cor-acento); /* Roxo */
+    transform: scale(1.1);
+}
+
+.swatch:hover {
+    transform: scale(1.1);
+}
+
+/* Container da imagem no card */
+.product-image-placeholder {
+    position: relative; /* Necessário para o posicionamento absoluto funcionar dentro dele */
+    height: 250px;
+    overflow: hidden;
+    background: #f4f4f4;
+}
+
+/* Estilo comum para AMBAS as imagens (frente e costas) */
+.product-image-placeholder img {
+    position: absolute; /* Faz elas ficarem uma em cima da outra */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.4s ease-in-out; /* Transição suave */
+}
+
+/* Imagem da Frente (Padrão) */
+.img-front {
+    opacity: 1; /* Visível */
+    z-index: 2; /* Fica na frente */
+}
+
+/* Imagem das Costas (Escondida) */
+.img-back {
+    opacity: 0; /* Invisível */
+    z-index: 1; /* Fica atrás */
+}
+
+/* --- O EFEITO HOVER --- */
+/* Quando passa o mouse no CARD... */
+
+/* A imagem da frente fica transparente */
+.product-card:hover .img-front {
+    opacity: 0;
+}
+
+/* A imagem de trás fica visível */
+.product-card:hover .img-back {
+    opacity: 1;
+}
+
+/* Estilo para o link do carrinho no menu */
+nav a[href*="carrinho.html"] {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -15px;
+    background-color: var(--cor-acento);
+    color: white;
+    font-size: 0.7em;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: bold;
+    min-width: 18px;
+    text-align: center;
+}
+
 @keyframes fadein {
     from {bottom: 0; opacity: 0;}
     to {bottom: 30px; opacity: 1;}
@@ -526,4 +634,8 @@ footer {
 @keyframes fadeout {
     from {bottom: 30px; opacity: 1;}
     to {bottom: 0; opacity: 0;}
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body { opacity: 1; transition: none; }
 }
