@@ -4,32 +4,57 @@
 const products = {
     "p1": {
         id: "p1",
-        name: "T-Shirt Estampa FR Original",
+        name: "Blusa Punk Rock Art",
         price: 79.90,
-        description: "Nossa camiseta clássica, feita com o melhor algodão e estampada com a arte exclusiva FR.",
-        imageName: "punk.jpg" 
+        description: "Nossa camiseta clássica, feita com o melhor algodão e estampada com a arte exclusiva FR. Conforto e estilo definem esta peça.",
+        // Formato: [Imagem Frente, Imagem Costas]
+        imageName: ["punk-frente-preto.jpeg", "punk-costa-preto.jpeg"], 
+        colors: {
+            "Preto": ["punk-frente-preto.jpeg", "punk-costa-preto.jpeg"],
+            "Branco": ["punk-frente-branco.jpg", "punk-costa-branco.jpg"]
+        }
     },
     "p2": {
         id: "p2",
-        name: "Blusa Manga Longa Art",
-        price: 99.90,
+        name: "Blusa Smile Art",
+        price: 79.90,
         description: "Perfeita para dias mais frios, com estampa única em alta definição.",
-        imageName: "smile.jpg"
+        imageName: ["smile-frente-preto.jpg", "smile-costa-preto.jpg"],
+        colors: {
+            "Preto": ["smile-frente-preto.jpg", "smile-costa-preto.jpeg"],
+            "Branco": ["smile-costa-branco.jpeg", "smile-costa-branco.jpeg"]
+        }
     },
     "p3": {
         id: "p3",
         name: "Cropped Design Urbano",
         price: 69.90,
         description: "Um corte moderno para quem tem atitude. O cropped FR traz frescor e estilo.",
-        imageName: "blusa3.jpg"
+        imageName: ["blusa3.jpg", "blusa3.jpg"],
+        colors: {
+            "Única": ["blusa3.jpg", "blusa3.jpg"]
+        }
     },
     "p4": {
         id: "p4",
         name: "Regata FR Basic",
         price: 59.90,
         description: "A peça essencial para o dia a dia. Leve, confortável e com o logo discreto.",
-        imageName: "blusa4.jpg"
+        imageName: ["blusa4.jpg", "blusa4.jpg"],
+        colors: {
+            "Preto": ["blusa4.jpg", "blusa4.jpg"],
+            "Branco": ["blusa4-branca.jpg", "blusa4-branca.jpg"]
+        }
     }
+};
+
+// Mapeamento de Cores para o Seletor Visual
+const colorMap = {
+    "Preto": "#1a1a1a",
+    "Branco": "#ffffff",
+    "Cinza": "#888888",
+    "Azul": "#0000ff",
+    "Única": "#7b2cbf"
 };
 
 /* =========================================
@@ -37,27 +62,13 @@ const products = {
    ========================================= */
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- FUNÇÃO AJUDANTE DE IMAGENS ---
+    // --- FUNÇÕES AUXILIARES ---
+    
     function getImagePath(filename) {
         if (!filename) return '';
         const isSubFolder = window.location.pathname.includes('/html/');
         return isSubFolder ? `../img/${filename}` : `assent/img/${filename}`;
     }
-
-    // --- EFEITOS VISUAIS ---
-    document.body.classList.add('loaded');
-
-    // Menu Mobile
-    const menuToggle = document.querySelector('.menu-toggle');
-    const navbar = document.querySelector('.navbar');
-    if (menuToggle && navbar) {
-        menuToggle.addEventListener('click', () => {
-            navbar.classList.toggle('active');
-            menuToggle.textContent = navbar.classList.contains('active') ? '✕' : '☰';
-        });
-    }
-
-    // --- LÓGICA DO CARRINHO ---
 
     function getCart() {
         return JSON.parse(localStorage.getItem('frShopCart')) || [];
@@ -68,32 +79,59 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCartIcon();
     }
 
-    // 1. Adicione esta função nova em algum lugar do script
-    function showToast(message) {
-        const toast = document.getElementById("toast");
-        if (toast) {
-            toast.textContent = message;
-            toast.className = "show";
-            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
-        } else {
-            // Fallback caso esqueça de por a div no HTML
-            alert(message); 
-        }
+    // --- NOTIFICAÇÃO TOAST ---
+    
+    if (!document.getElementById('toast')) {
+        const toastDiv = document.createElement('div');
+        toastDiv.id = 'toast';
+        document.body.appendChild(toastDiv);
     }
 
-    // CORREÇÃO: Agora aceita o parâmetro 'size'
-    function addItemToCart(id, quantity, size) {
-        const productData = products[id];
+    function showToast(message) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.className = "show";
+        setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+    }
+
+    // --- INTERFACE E MENU ---
+
+    document.body.classList.add('loaded');
+
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navbar = document.querySelector('.navbar');
+    if (menuToggle && navbar) {
+        menuToggle.addEventListener('click', () => {
+            navbar.classList.toggle('active');
+            menuToggle.textContent = navbar.classList.contains('active') ? '✕' : '☰';
+        });
+    }
+
+    // Badge do Carrinho no Menu
+    function updateCartIcon() {
+        const cart = getCart();
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const cartLinks = document.querySelectorAll('nav a[href*="carrinho.html"]');
         
-        if (!productData) {
-            console.error("Erro: Produto não encontrado.");
-            return;
-        }
+        cartLinks.forEach(link => {
+            link.innerHTML = 'Carrinho 🛒';
+            if (totalItems > 0) {
+                const badge = document.createElement('span');
+                badge.className = 'cart-badge';
+                badge.textContent = totalItems;
+                link.appendChild(badge);
+            }
+        });
+    }
+
+    // --- LÓGICA DO CARRINHO ---
+
+    function addItemToCart(id, quantity, size, color, specificImage) {
+        const productData = products[id];
+        if (!productData) return;
 
         let cart = getCart();
-        
-        // Verifica se já existe o mesmo produto COM O MESMO TAMANHO
-        const existingItem = cart.find(item => item.id === id && item.size === size);
+        const existingItem = cart.find(item => item.id === id && item.size === size && item.color === color);
 
         if (existingItem) {
             existingItem.quantity += quantity;
@@ -103,25 +141,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 name: productData.name,
                 price: productData.price,
                 quantity: quantity,
-                imageName: productData.imageName,
-                size: size // Salvando o tamanho!
+                imageName: specificImage || productData.imageName[0],
+                size: size,
+                color: color
             });
         }
         
         saveCart(cart);
-        showToast(`Produto adicionado ao carrinho! (Tam: ${size})`);
+        showToast(`Adicionado ao carrinho! (${color} - ${size})`);
     }
 
-    function updateCartIcon() {
-        const cart = getCart();
-        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-        const cartLinks = document.querySelectorAll('nav a[href*="carrinho.html"]');
-        cartLinks.forEach(link => {
-            link.textContent = totalItems > 0 ? `Carrinho (${totalItems}) 🛒` : 'Carrinho 🛒';
-        });
-    }
-
-    // Renderiza Carrinho
     function renderCart() {
         const cartTableBody = document.getElementById('cart-table-body');
         if (!cartTableBody) return;
@@ -129,13 +158,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const cart = getCart();
         const cartSubtotalEl = document.getElementById('cart-subtotal');
         const cartTotalEl = document.getElementById('cart-total');
+        const checkoutSummary = document.querySelector('.cart-summary');
 
         cartTableBody.innerHTML = '';
         let subtotal = 0;
 
         if (cart.length === 0) {
-            cartTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px;">Seu carrinho está vazio.</td></tr>';
+            cartTableBody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align:center; padding: 40px;">
+                        <p style="font-size: 1.2em; margin-bottom: 20px;">Seu carrinho está vazio.</p>
+                        <a href="loja.html" class="cta-button" style="padding: 10px 20px; display:inline-block;">Voltar para a Loja</a>
+                    </td>
+                </tr>`;
+            if (checkoutSummary) checkoutSummary.style.display = 'none';
         } else {
+            if (checkoutSummary) checkoutSummary.style.display = 'block';
+            
             cart.forEach((item, index) => {
                 const itemTotal = item.price * item.quantity;
                 subtotal += itemTotal;
@@ -147,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <img src="${imagePath}" alt="${item.name}" class="cart-thumb-img" style="width:50px; height:50px; object-fit:cover; border-radius:4px; margin-right:10px;">
                         <div>
                             <span>${item.name}</span><br>
-                            <small style="color:#777;">Tamanho: <strong>${item.size}</strong></small>
+                            <small style="color:#666;">Cor: <strong>${item.color}</strong> | Tam: <strong>${item.size}</strong></small>
                         </div>
                     </td>
                     <td>R$ ${item.price.toFixed(2)}</td>
@@ -168,135 +207,159 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cartSubtotalEl) cartSubtotalEl.textContent = `R$ ${subtotal.toFixed(2)}`;
         if (cartTotalEl) cartTotalEl.textContent = `R$ ${total.toFixed(2)}`;
         
-        addQuantityListeners();
-        addRemoveListeners();
-    }
-
-    function addQuantityListeners() {
-        const quantityInputs = document.querySelectorAll('.cart-quantity');
-        quantityInputs.forEach(input => {
+        // Listeners para quantidade e remoção
+        document.querySelectorAll('.cart-quantity').forEach(input => {
             input.addEventListener('change', (e) => {
-                const index = e.target.dataset.index; // Usa Index agora
-                const newQuantity = parseInt(e.target.value);
-                updateCartQuantity(index, newQuantity);
+                const idx = e.target.dataset.index;
+                const qty = parseInt(e.target.value);
+                let currentCart = getCart();
+                if (qty > 0) { currentCart[idx].quantity = qty; } else { currentCart.splice(idx, 1); }
+                saveCart(currentCart);
+                renderCart();
             });
         });
-    }
 
-    function addRemoveListeners() {
-        const removeLinks = document.querySelectorAll('.cart-remove');
-        removeLinks.forEach(link => {
+        document.querySelectorAll('.cart-remove').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
-                const index = e.target.dataset.index;
-                removeCartItem(index);
+                let currentCart = getCart();
+                currentCart.splice(e.target.dataset.index, 1);
+                saveCart(currentCart);
+                renderCart();
             });
         });
     }
 
-    function updateCartQuantity(index, newQuantity) {
-        let cart = getCart();
-        if (newQuantity > 0) {
-            cart[index].quantity = newQuantity;
-        } else {
-            cart.splice(index, 1); // Remove se for 0
-        }
-        saveCart(cart);
-        renderCart();
-        renderCheckoutSummary();
-    }
+    // --- RENDERIZAÇÃO DE PRODUTOS ---
 
-    function removeCartItem(index) {
-        let cart = getCart();
-        cart.splice(index, 1); // Remove pelo index do array
-        saveCart(cart);
-        renderCart();
-        renderCheckoutSummary();
-    }
-
-    // --- RENDERIZAÇÃO DA LOJA ---
-    function renderShop() {
+    // Loja (Com suporte a animação Frente/Verso)
+    function renderShop(searchTerm = '') {
         const grid = document.getElementById('product-grid-container');
         if (!grid) return;
 
         grid.innerHTML = '';
+        
         for (const key in products) {
             const product = products[key];
-            const imagePath = getImagePath(product.imageName);
+
+            if (searchTerm && !product.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+                continue;
+            }
+
+            const frontPath = getImagePath(product.imageName[0]);
+            const backPath = getImagePath(product.imageName[1] || product.imageName[0]);
 
             const card = document.createElement('div');
             card.className = 'product-card';
             card.innerHTML = `
                 <a href="produto.html?id=${product.id}">
-                    <div class="product-image-placeholder" style="background: white;">
-                        <img src="${imagePath}" alt="${product.name}" style="width:100%; height:200px; object-fit:cover;">
+                    <div class="product-image-placeholder">
+                        <img src="${frontPath}" alt="${product.name}" class="img-front">
+                        <img src="${backPath}" alt="${product.name} - Costas" class="img-back">
                     </div>
-                </a>
-                <a href="produto.html?id=${product.id}">
                     <h3>${product.name}</h3>
+                    <p class="price">R$ ${product.price.toFixed(2)}</p>
                 </a>
-                <p class="price">R$ ${product.price.toFixed(2)}</p>
-                <a href="produto.html?id=${product.id}" class="details-button">Ver Detalhes</a>
             `;
             grid.appendChild(card);
         }
     }
 
-    // --- RENDERIZAÇÃO DA PÁGINA DE PRODUTO ---
+    // Home (Destaques com suporte a animação Frente/Verso)
+    function renderFeatured() {
+        const grid = document.getElementById('featured-grid-container');
+        if (!grid) return;
+
+        grid.innerHTML = '';
+        const featuredIds = ['p1', 'p2']; 
+
+        featuredIds.forEach(id => {
+            const product = products[id];
+            if(!product) return;
+
+            const frontPath = getImagePath(product.imageName[0]);
+            const backPath = getImagePath(product.imageName[1] || product.imageName[0]);
+
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `
+                <a href="assent/html/produto.html?id=${product.id}">
+                    <div class="product-image-placeholder">
+                        <img src="${frontPath}" alt="${product.name}" class="img-front">
+                        <img src="${backPath}" alt="${product.name} - Costas" class="img-back">
+                    </div>
+                    <h3>${product.name}</h3>
+                    <p class="price">R$ ${product.price.toFixed(2)}</p>
+                </a>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    // Página de Detalhes do Produto (Com Seletor Visual)
     function renderProductPage() {
         const container = document.querySelector('.product-container');
         if (!container) return;
 
         const urlParams = new URLSearchParams(window.location.search);
         const productId = urlParams.get('id');
-
-        if (!productId || !products[productId]) {
-            container.innerHTML = "<h1>Produto não encontrado. Volte para a loja.</h1>";
-            return;
-        }
+        if (!productId || !products[productId]) return;
 
         const product = products[productId];
-        const imagePath = getImagePath(product.imageName);
-
-        const nameEl = document.getElementById('product-name');
-        const priceEl = document.getElementById('product-price');
-        const descEl = document.getElementById('product-description');
-        const imgContainer = document.getElementById('product-image');
-
-        if(nameEl) nameEl.textContent = product.name;
-        if(priceEl) priceEl.textContent = `R$ ${product.price.toFixed(2)}`;
-        if(descEl) descEl.textContent = product.description;
         
-        if(imgContainer) {
-            imgContainer.innerHTML = `<img src="${imagePath}" alt="${product.name}" style="width:100%; height:100%; object-fit:cover; border-radius:5px;">`;
-            imgContainer.style.backgroundColor = 'transparent';
-        }
-
+        document.getElementById('product-name').textContent = product.name;
+        document.getElementById('product-price').textContent = `R$ ${product.price.toFixed(2)}`;
+        document.getElementById('product-description').textContent = product.description;
         container.dataset.id = productId;
+
+        const swatchContainer = document.getElementById('color-swatches');
+        const updateMainImage = (imgArray) => {
+            const mainImg = Array.isArray(imgArray) ? imgArray[0] : imgArray;
+            const path = getImagePath(mainImg);
+            const imgContainer = document.getElementById('product-image');
+            imgContainer.innerHTML = `<img src="${path}" alt="${product.name}" style="width:100%; height:100%; object-fit:cover; border-radius:5px;">`;
+        };
+
+        if (swatchContainer && product.colors) {
+            swatchContainer.innerHTML = '';
+            const colors = Object.keys(product.colors);
+            
+            colors.forEach((colorName, index) => {
+                const swatch = document.createElement('div');
+                swatch.className = `swatch ${index === 0 ? 'active' : ''}`;
+                swatch.style.backgroundColor = colorMap[colorName] || '#ccc';
+                swatch.title = colorName;
+
+                if (index === 0) {
+                    updateMainImage(product.colors[colorName]);
+                    container.dataset.selectedColor = colorName;
+                    container.dataset.selectedImg = product.colors[colorName][0];
+                }
+
+                swatch.addEventListener('click', () => {
+                    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+                    swatch.classList.add('active');
+                    container.dataset.selectedColor = colorName;
+                    container.dataset.selectedImg = product.colors[colorName][0];
+                    updateMainImage(product.colors[colorName]);
+                });
+
+                swatchContainer.appendChild(swatch);
+            });
+        }
     }
 
-    // Botão "Adicionar ao Carrinho"
-    const addToCartButton = document.getElementById('add-to-cart-btn');
-    if (addToCartButton) {
-        addToCartButton.addEventListener('click', () => {
-            const container = document.querySelector('.product-container');
-            const id = container.dataset.id;
-            const quantityInput = document.getElementById('quantidade');
-            const quantity = parseInt(quantityInput.value);
-            
-            // CAPTURA O TAMANHO AQUI
-            const sizeInput = document.getElementById('tamanho');
-            const size = sizeInput.value;
+    // --- BUSCA ---
 
-            if (id && quantity > 0) {
-                addItemToCart(id, quantity, size);
-            } else {
-                alert("Erro ao adicionar.");
-            }
+    const searchInput = document.getElementById('product-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            renderShop(e.target.value);
         });
     }
 
-    // --- CHECKOUT ---
+    // --- FINALIZAÇÃO E BOTÕES ---
+
     function renderCheckoutSummary() {
         const container = document.getElementById('checkout-summary-items');
         if (!container) return;
@@ -312,27 +375,39 @@ document.addEventListener('DOMContentLoaded', () => {
         cart.forEach(item => {
             const itemTotal = item.price * item.quantity;
             subtotal += itemTotal;
-            
             const div = document.createElement('div');
             div.className = 'summary-item';
-            // Mostra o tamanho no checkout também
             div.innerHTML = `
-                <span class="item-name">${item.name} (Tam: ${item.size}) x${item.quantity}</span>
+                <span class="item-name">${item.name}<br><small>(${item.color}, ${item.size}) x${item.quantity}</small></span>
                 <span class="item-price">R$ ${itemTotal.toFixed(2)}</span>
             `;
             container.appendChild(div);
         });
 
-        const frete = (subtotal > 0) ? 10.00 : 0;
-        const total = subtotal + frete;
-
-        if(subtotalEl) subtotalEl.textContent = `R$ ${subtotal.toFixed(2)}`;
-        if(freteEl) freteEl.textContent = `R$ ${frete.toFixed(2)}`;
-        if(totalEl) totalEl.textContent = `R$ ${total.toFixed(2)}`;
+        const total = subtotal + 10;
+        if (subtotalEl) subtotalEl.textContent = `R$ ${subtotal.toFixed(2)}`;
+        if (freteEl) freteEl.textContent = `R$ 10.00`;
+        if (totalEl) totalEl.textContent = `R$ ${total.toFixed(2)}`;
     }
 
+    const addBtn = document.getElementById('add-to-cart-btn');
+    if (addBtn) {
+        addBtn.addEventListener('click', () => {
+            const container = document.querySelector('.product-container');
+            const id = container.dataset.id;
+            const qty = parseInt(document.getElementById('quantidade').value);
+            const size = document.getElementById('tamanho').value;
+            const color = container.dataset.selectedColor;
+            const img = container.dataset.selectedImg;
 
-    // --- FINALIZAR WHATSAPP ---
+            if (id && qty > 0 && color) {
+                addItemToCart(id, qty, size, color, img);
+            } else {
+                showToast("Selecione a cor e o tamanho!");
+            }
+        });
+    }
+
     const finishBtn = document.getElementById('finalize-whatsapp-btn');
     if (finishBtn) {
         finishBtn.addEventListener('click', () => {
@@ -342,62 +417,32 @@ document.addEventListener('DOMContentLoaded', () => {
             const bairro = document.getElementById('bairro').value;
             const cidade = document.getElementById('cidade').value;
             const pagamento = document.getElementById('pagamento').value;
-            const referencia = document.getElementById('referencia').value;
 
             if (!nome || !telefone || !endereco || !bairro || !cidade) {
-                alert("Por favor, preencha todos os campos de endereço e contato.");
-                return;
+                showToast("Preencha todos os campos obrigatórios!"); return;
             }
 
             const cart = getCart();
-            if (cart.length === 0) {
-                alert("Seu carrinho está vazio!");
-                return;
-            }
+            if (cart.length === 0) return;
 
             let subtotal = 0;
-            let mensagemProdutos = "";
-
+            let msg = "";
             cart.forEach(item => {
                 const itemTotal = item.price * item.quantity;
                 subtotal += itemTotal;
-                // INCLUI O TAMANHO NA MENSAGEM DO WHATSAPP
-                mensagemProdutos += `▪️ ${item.quantity}x ${item.name} | Tam: *${item.size}* (R$ ${itemTotal.toFixed(2)})\n`;
+                msg += `▪️ ${item.quantity}x ${item.name}\n   Cor: ${item.color} | Tam: ${item.size}\n`;
             });
 
-            const frete = (subtotal > 0) ? 10.00 : 0;
-            const total = subtotal + frete;
+            const total = subtotal + 10;
+            const fullMsg = `*NOVO PEDIDO PELO SITE* 🛍️\n\n*Cliente:* ${nome}\n*Contato:* ${telefone}\n\n*📦 Produtos:*\n${msg}\n*💰 Total:* R$ ${total.toFixed(2)}\n\n*📍 Entrega:* ${endereco} - ${bairro}, ${cidade}\n*💳 Pagamento:* ${pagamento}`;
 
-            const mensagem = 
-`*NOVO PEDIDO PELO SITE* 🛍️
-
-*Cliente:* ${nome}
-*Contato:* ${telefone}
-
-*📦 Produtos:*
-${mensagemProdutos}
-
-*💰 Resumo:*
-Subtotal: R$ ${subtotal.toFixed(2)}
-Frete: R$ ${frete.toFixed(2)}
-*TOTAL: R$ ${total.toFixed(2)}*
-
-*📍 Endereço:*
-${endereco} - ${bairro}, ${cidade}
-${referencia ? `Ref: ${referencia}` : ''}
-
-*💳 Pagamento:* ${pagamento}
-
-------------------------------`;
-
-            const numeroLoja = "558592093436"; 
-            const url = `https://wa.me/${numeroLoja}?text=${encodeURIComponent(mensagem)}`;
-            window.open(url, '_blank');
+            window.open(`https://wa.me/558592093436?text=${encodeURIComponent(fullMsg)}`, '_blank');
         });
     }
 
     // INICIALIZAÇÃO
     renderShop();
+    renderFeatured();
     renderProductPage();
     renderCart();
     renderCheckoutSummary();
