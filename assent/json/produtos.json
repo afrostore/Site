@@ -1,0 +1,24 @@
+[
+    {
+        "id": "p1",
+        "name": "Blusa Punk Rock Art",
+        "price": 79.90,
+        "description": "Nossa camiseta clássica, feita com o melhor algodão e estampada com a arte exclusiva FR. Conforto e estilo definem esta peça.",
+        "imageName": ["punk-frente-preto.jpg", "punk-costa-preto.jpg"], 
+        "colors": {
+            "Preto": ["punk-frente-preto.jpg", "punk-costa-preto.jpg"],
+            "Branco": ["punk-costa-branco.jpg", "punk-frente-branco.jpg"]
+        }
+    },
+    {
+        "id": "p2",
+        "name": "Blusa Smile Art",
+        "price": 79.90,
+        "description": "Perfeita para dias mais frios, com estampa única em alta definição.",
+        "imageName": ["smile-frente-preto.jpg", "smile-costa-preto.jpg"],
+        "colors": {
+            "Preto": ["smile-frente-preto.jpg", "smile-costa-preto.jpg"],
+            "Branco": ["smile-costa-branco.jpg", "smile-frente-branco.jpg"]
+        }
+    }
+]
